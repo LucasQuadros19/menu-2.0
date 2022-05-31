@@ -5,8 +5,16 @@
 int main()
 {
     FILE *f;
-    f = fopen("jogadores.txt", "w");
+    
+    f = fopen("jogadores.txt", "r");
+    if(f==NULL){
+        f = fopen("jogadores.txt", "w");
     fclose(f);
+    }
+        save(f);
+    
+    fclose(f);
+
     int opc, loop = 0;
     do
     {

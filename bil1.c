@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define max 10 // limite de cadastro
+#define max 3 // limite de cadastro
 #include "bil.h"
 typedef struct
 {
@@ -11,6 +11,11 @@ typedef struct
 reg_jogador reg[max]; // vetor principal usado
 int findUser(char name[10], int untilPos);
 void ordenacao(int l);
+int export(FILE *f, int i);
+void save(FILE *f);
+void insertionSort(int value);
+void moveToRight(int pos);
+
 ////////////////////////
 int registro(int l)
 {
@@ -31,6 +36,7 @@ int registro(int l)
     if (userRepeated > -1)
     {
         reg[userRepeated].pontos = pontosaux; // faz com q os pontos do registro ja existente ejao substituidos
+        insertionSort(pontosaux);
         return 1;
     }
 
@@ -38,6 +44,7 @@ int registro(int l)
     reg_jogador novUser = {pontosaux, " "};
     strcpy(novUser.nome, nomeaux);
     reg[l] = novUser;
+    insertionSort(pontosaux);
     return 0;
 }
 //////////////////////////////////////////////////////////////////
@@ -46,30 +53,24 @@ void rank(int l) // ordenacao
     int opc;
     ordenacao(l);
     printf("pos\tpontos\t\tnome\n");
-    FILE *f; 
-     f = fopen("jogadores.txt","w");
-    
+    FILE *f;
+    f = fopen("jogadores.txt", "w");
+
     for (int i = 0; i < l; i++)
     {
         printf("%d\t%d\t\t%s\n", i + 1, reg[i].pontos, reg[i].nome);
-        fprintf(f,"%d\t%d\t\t%s\n", i + 1, reg[i].pontos, reg[i].nome);
+        export(f, i);
     }
     fclose(f);
-
     printf("deseja jogar com algum save ou criar novo jogo=");
-    scanf("%d",&opc);
-    if(opc==1){
-
-        // escolher o jogador 
-
-    }else{
-        registro(l);
-
+    scanf("%d", &opc);
+    if (opc == 1)
+    {
     }
-
-
-
-
+    else
+    {
+        registro(l);
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void criadores()
@@ -89,6 +90,7 @@ int findUser(char name[10], int untilPos) // procura no vetor se ja existe um re
     }
     return -1;
 }
+
 void ordenacao(int l)
 {
 
@@ -108,4 +110,36 @@ void ordenacao(int l)
             }
         }
     }
+}
+
+int export(FILE *f, int i)
+{
+    return fprintf(f, "%d %s ", reg[i].pontos, reg[i].nome);
+}
+
+void insertionSort(int x)
+{
+    for (int i = 0; i < max; i++)
+    {
+        if (x > reg[i].pontos)
+        {
+            moveToRight(i);
+            reg[i].pontos = x;
+
+            return;
+        }
+    }
+}
+
+void moveToRight(int pos)
+{
+    for (int i = max - 1; i > pos; i--)
+    {
+        reg[i].pontos = reg[i - 1].pontos;
+        strcpy(reg[i].nome, reg[i - 1].nome);
+    }
+}
+void save(FILE *f)
+{
+    fscanf(f, "%d %s %d %s %d %s", reg[0].pontos, reg[0].nome, reg[1].pontos, reg[1].nome, reg[2].pontos, reg[2].nome);
 }

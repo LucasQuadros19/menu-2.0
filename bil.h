@@ -3,4 +3,5 @@
 void rank();
 int registro();
 void criadores();
+void save();
 #endif
